@@ -27,12 +27,11 @@
               v-model="password"
             />
           </UFormGroup>
-          <button type="submit">Login</button>
+          <div class="flex justify-between py-[20px]">
+            <UButton label="Đăng Nhập" type="submit" />
+            <NuxtLink to="/register">Bạn Chưa Đăng Ký?</NuxtLink>
+          </div>
         </form>
-        <div class="flex justify-between py-[20px]">
-          <UButton label="Đăng Nhập" />
-          <NuxtLink to="/register">Bạn Chưa Đăng Ký?</NuxtLink>
-        </div>
       </div>
     </section>
   </div>
@@ -51,36 +50,60 @@ async function login() {
   };
   console.log("body to send:", bodyToSend); // Inspect before sending
   try {
-    const response = await $fetch("http://localhost:3001/login/", {
-      method: "POST",
-      body: bodyToSend,
-    });
+    const response = await $fetch(
+      "https://findyourdriverapi-production.up.railway.app/login/",
+      {
+        method: "POST",
+        body: bodyToSend,
+      },
+    );
     // console.log("respond:", response);
     // console.log("Trạng thái phản hồi:", response.status);
-    const Userid = response._id;
+    const Userid = response.userId;
     const isDriver = response.isDriver;
-    console.log("Id của người dùng này:", response._id);
+    console.log("Id của người dùng này:", response.userId);
     console.log("Có phải là tài xế không:", isDriver);
     if (isDriver === false) {
-      alert("Đăng nhập thành công");
+      const toast = useToast();
+      toast.add({
+        id: "update_downloaded",
+        title: "Đăng nhập thành công",
+        description: "Bạn sẽ được chuyển sang trang cá nhân của bạn",
+        icon: "i-heroicons-light-bulb",
+        timeout: 1500,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       await navigateTo({ path: `/customers/${Userid}` });
     }
-    if (response.ok) {
-      const data = await response.json(); // Parse JSON response
-      if (data.success) {
-        const userId = data.user._id;
-        console.log("User ID:", userId);
-      } else {
-        console.error("Login failed:", data);
-      }
-    } else {
-      // Some other error aside from incorrect credentials occurred
-      console.error("Login failed:", response);
-    }
+
+    // if (response.ok) {
+    //   const data = await response.json(); // Parse JSON response
+    //   if (data.success) {
+    //     const userId = data.user._id;
+    //     console.log("User ID:", userId);
+    //   } else {
+    //     console.error("Login failed:", data);
+    //   }
+    // } else {
+    //   // Some other error aside from incorrect credentials occurred
+    //   console.error("Login failed:", response);
+    // }
   } catch (error) {
     console.error("Login error:", error);
   }
 }
+//////////////////////////Notification
+const toast = useToast();
+
+onMounted(() => {
+  toast.add({
+    id: "update_downloaded",
+    title: "Đây là phần đăng nhập tài khoản",
+    description: "Bạn hãy nhập thông tin cần thiết vào mẫu sau",
+    icon: "i-heroicons-light-bulb",
+    timeout: 3000,
+  });
+});
 </script>
 
 <style>

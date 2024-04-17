@@ -38,15 +38,21 @@ const {
   data: customer,
   pending,
   error,
-} = await useFetch("http://localhost:3001/users/" + id, {
-  pick: ["email", "phone"],
-});
+} = await useFetch(
+  "https://findyourdriverapi-production.up.railway.app/users/" + id,
+  {
+    pick: ["email", "phone"],
+  },
+);
 
 const handleSubmit = async () => {
-  const response = await useFetch("http://localhost:3001/users/" + id, {
-    method: "PUT",
-    body: customer,
-  });
+  const response = await useFetch(
+    "https://findyourdriverapi-production.up.railway.app/users/" + id,
+    {
+      method: "PUT",
+      body: customer,
+    },
+  );
   alert(response.status._value);
   const res = response.status._value;
   if (res === "success") {

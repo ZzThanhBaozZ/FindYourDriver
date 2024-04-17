@@ -1,6 +1,8 @@
 <template>
   <div class="pb-[40vh]">
-    <div class="mb-[100px] flex justify-between px-[5rem]">
+    <div
+      class="mb-[100px] flex items-center justify-between px-[5rem] py-[2vh]"
+    >
       <div>
         <NuxtImg src="/Superspeed.svg" class="logo" />
       </div>
@@ -14,9 +16,10 @@
       </nav> -->
       <section class="flex">
         <NuxtLink to="/login">
-          <div class="rounded-full bg-[hsl(2,60%,50%)] p-4">Đăng Nhập</div>
+          <UButton size="xl" :ui="{ rounded: 'rounded-full' }"
+            >Đăng Nhập</UButton
+          >
         </NuxtLink>
-        <NuxtLink to="/register">Đăng ký</NuxtLink>
       </section>
     </div>
     <section class="px-[5vw]">

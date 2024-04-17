@@ -61,7 +61,9 @@
 </template>
 
 <script lang="ts" setup>
-const { data: customers } = useFetch("http://localhost:3001/customers/");
+const { data: customers } = useFetch(
+  "https://findyourdriverapi-production.up.railway.app/customers/",
+);
 
 definePageMeta({
   layout: "dashboard-customer",

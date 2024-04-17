@@ -5,7 +5,9 @@
 </template>
 
 <script lang="ts" setup>
-const { data: vehicles } = useFetch("http://localhost:3001/vehicles/");
+const { data: vehicles } = useFetch(
+  "https://findyourdriverapi-production.up.railway.app/vehicles/",
+);
 </script>
 
 <style></style>

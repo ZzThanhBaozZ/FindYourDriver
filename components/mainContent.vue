@@ -1,7 +1,5 @@
 <template>
-  <main
-    class="default-px relative left-[20vw] flex h-[200vh] w-[80vw] flex-col border"
-  >
+  <main class="default-px relative left-[20vw] flex w-[80vw] flex-col border">
     <section class="flex flex-col gap-4">
       <div>
         <div class="shadow-box inline-block rounded-lg bg-white p-8">
@@ -14,20 +12,41 @@
           </div>
         </div>
       </div>
-      <form @submit.prevent="createUser(formData)" class="w-1/4">
+      <form @submit.prevent="postUser" class="w-1/4">
         <UFormGroup label="Họ và Tên">
-          <UInput placeholder="Nguyễn Văn A" icon="i-heroicons-user-16-solid" />
+          <UInput
+            placeholder="Nguyễn Văn A"
+            icon="i-heroicons-user-16-solid"
+            v-model="fullName"
+          />
         </UFormGroup>
         <UFormGroup label="Email">
-          <UInput placeholder="you@example.com" icon="i-heroicons-envelope" />
+          <UInput
+            placeholder="you@example.com"
+            icon="i-heroicons-envelope"
+            v-model="email"
+          />
         </UFormGroup>
         <UFormGroup label="Số Điện Thoại">
-          <UInput placeholder="0919999999" icon="i-heroicons-phone" />
+          <UInput
+            placeholder="0919999999"
+            icon="i-heroicons-phone"
+            v-model="phone"
+          />
         </UFormGroup>
         <UFormGroup label="Mat khau">
-          <UInput placeholder="2512512612376" icon="i-heroicons-phone" />
+          <UInput
+            placeholder="2512512612376"
+            icon="i-heroicons-phone"
+            v-model="password"
+          />
         </UFormGroup>
-        <button type="submit" class="my-4 rounded-full bg-[#24a0ed] p-2">
+        <button
+          type="submit"
+          class="my-4 rounded-full bg-[#24a0ed] p-2"
+          :disabled="refreshing"
+          @click="refreshAll"
+        >
           Thêm Người dùng
         </button>
       </form>
@@ -42,7 +61,7 @@
           </h3>
           <h4 class="py-4">{{ user._id }}</h4>
         </div>
-        <div class="w-[10%]">
+        <div class="w-[20%]">
           <h3 class="leading-4">
             <Icon name="tabler:user" color="black" class="mr-2 h-8 w-8" />Họ và
             tên
@@ -81,41 +100,26 @@
           Delete
         </button>
       </div>
-      <div>
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10535.508890495077!2d105.84282512604092!3d20.99805238919978!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ac73d357ec99%3A0xc31f64fdce94db24!2zS8OtIHTDumMgeMOhIMSQ4bqhaSBo4buNYyBLaW5oIHThur8gUXXhu5FjIETDom4!5e0!3m2!1svi!2s!4v1712667104433!5m2!1svi!2s"
-          width="100%"
-          height="450"
-          style="border: 0"
-          allowfullscreen="true"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
-        <div class="relative z-[999]">
-          <Icon
-            name="tabler:phone"
-            color="black"
-            class="fixed left-1/2 top-1/2 z-[999] -translate-x-1/2 -translate-y-1/2 transform"
-          >
-            Tài xế
-          </Icon>
-        </div>
-      </div>
     </section>
   </main>
 </template>
 
 <script lang="ts" setup>
-const { data: users } = useFetch("http://localhost:3001/users");
+const { data: users } = useFetch(
+  "https://findyourdriverapi-production.up.railway.app/users",
+);
 
 async function deleteUser(userId) {
   try {
-    const response = await fetch(`http://localhost:3001/users/${userId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `https://findyourdriverapi-production.up.railway.app/users/${userId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (response.ok) {
       users.value = users.value.filter((user) => user._id !== userId);
@@ -128,26 +132,56 @@ async function deleteUser(userId) {
   }
 }
 
-async function createUser(newUserData) {
-  try {
-    const response = await fetch(`http://localhost:3001/users/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newUserData),
-    });
+import { ref } from "vue"; // Import ref for reactivity
 
-    if (response.ok) {
-      const createdUser = await response.json();
-      users.value.unshift(createdUser);
-    } else {
-      console.error("Create failed:", response.status);
+const fullName = ref("");
+const email = ref("");
+const phone = ref("");
+const password = ref("");
+
+async function postUser() {
+  const bodyToSend = {
+    fullName: fullName.value,
+    email: email.value,
+    phone: phone.value,
+    password: password.value,
+  };
+  console.log("body to send:", bodyToSend); // Inspect before sending
+  try {
+    const response = await $fetch(
+      "https://findyourdriverapi-production.up.railway.app/users/",
+      {
+        method: "POST",
+        body: bodyToSend,
+      },
+    );
+    console.log("respond:", response);
+    if (response === "User added!") {
+      console.log("Thêm thành công");
+      const toast = useToast();
+      toast.add({
+        id: "update_downloaded",
+        title: "Thêm người dùng thành công",
+        description: "Dữ liệu sẽ được cập nhật lại sau chốc lát",
+        icon: "i-heroicons-light-bulb",
+        timeout: 1500,
+      });
     }
   } catch (error) {
-    console.error("Error during create:", error);
+    console.error("Login error:", error);
   }
 }
+/////////////////////Reload
+const refreshing = ref(false);
+const refreshAll = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 4000));
+  refreshing.value = true;
+  try {
+    await refreshNuxtData();
+  } finally {
+    refreshing.value = false;
+  }
+};
 </script>
 
 <style></style>

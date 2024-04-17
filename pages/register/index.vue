@@ -95,13 +95,16 @@ async function registerUser() {
   success.value = false; // Reset success
 
   try {
-    const response = await fetch("http://localhost:3001/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      "https://findyourdriverapi-production.up.railway.app/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData.value),
       },
-      body: JSON.stringify(formData.value),
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
@@ -113,7 +116,7 @@ async function registerUser() {
   } catch (err) {
     error.value = err.message;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>

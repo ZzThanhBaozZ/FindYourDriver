@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 * {
-  /* outline: 1px solid rgba(255, 0, 0, 0.05) !important; */
+  /* outline: 1px solid rgba(255, 0, 0, 0.5) !important; */
 }
 html {
   font-family: Inter, Arial, "Helvetica Neue", Helvetica, sans-serif;
